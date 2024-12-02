@@ -7,4 +7,6 @@
     <string name="signup">sign up</string>
     <string name="login">Login</string>
     <string name="signIn">sign in</string>
+    <string name="error_password_min_8_char">Password must be at least 8 characters</string>
+    <string name="required">required</string>
 </resources>
