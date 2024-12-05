@@ -15,4 +15,7 @@
     <string name="title">title</string>
     <string name="description">description</string>
     <string name="result_upload">result_image</string>
+    <string name="gallery">gallery</string>
+    <string name="upload">upload</string>
+    <string name="camera">camera</string>
 </resources>
