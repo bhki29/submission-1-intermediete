@@ -1,4 +1,7 @@
 package com.dicoding.submission.storyapp.ui.register
 
-class RegisterViewModel {
+import androidx.lifecycle.ViewModel
+
+class RegisterViewModel : ViewModel() {
+
 }
