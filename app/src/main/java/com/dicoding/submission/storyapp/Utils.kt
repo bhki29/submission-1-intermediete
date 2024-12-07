@@ -1,4 +1,4 @@
-package com.dicoding.submission.storyapp.costumview
+package com.dicoding.submission.storyapp
 
 import android.content.ContentValues
 import android.content.Context
@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-import com.dicoding.submission.storyapp.BuildConfig
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

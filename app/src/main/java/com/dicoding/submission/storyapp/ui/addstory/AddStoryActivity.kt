@@ -7,13 +7,12 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.dicoding.submission.storyapp.costumview.getImageUri
 import com.dicoding.submission.storyapp.databinding.ActivityAddStoryBinding
+import com.dicoding.submission.storyapp.getImageUri
 
 class AddStoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddStoryBinding
-
     private var currentImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
