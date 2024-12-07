@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.submission.storyapp.data.repository.AuthRepository
 
-class RegisterViewModelFactory(private val repository: AuthRepository) : ViewModelProvider.Factory {
+class RegisterViewModelFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        // Mengembalikan RegisterViewModel dengan parameter repository
-        return if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
-            RegisterViewModel(repository) as T
-        } else {
-            throw IllegalArgumentException("Unknown ViewModel class")
+        if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return RegisterViewModel(authRepository) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

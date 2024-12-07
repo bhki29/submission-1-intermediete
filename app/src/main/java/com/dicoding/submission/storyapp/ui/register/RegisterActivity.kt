@@ -1,63 +1,71 @@
 package com.dicoding.submission.storyapp.ui.register
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.submission.storyapp.R
+import com.dicoding.submission.storyapp.costumview.CustomEmail
+import com.dicoding.submission.storyapp.costumview.CustomPassword
 import com.dicoding.submission.storyapp.data.repository.AuthRepository
+import com.dicoding.submission.storyapp.data.retrofit.ApiConfig
+import com.dicoding.submission.storyapp.ui.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var registerViewModel: RegisterViewModel
-    private lateinit var registerButton: Button
-    private lateinit var nameEditText: EditText
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Inisialisasi ViewModel dan Factory
-        val repository = AuthRepository()  // AuthRepository yang sudah menggunakan ApiConfig
+        val nameEditText = findViewById<EditText>(R.id.nameEditText)
+        val emailEditText = findViewById<CustomEmail>(R.id.emailEditText)
+        val passwordEditText = findViewById<CustomPassword>(R.id.customPassword)
+        val registerButton = findViewById<Button>(R.id.btn_register)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        val txtGoToLogin = findViewById<TextView>(R.id.txtGoToLogin)
+
+        // Initialize ViewModel
+        val apiService = ApiConfig.getApiService()
+        val repository = AuthRepository(apiService)
         val factory = RegisterViewModelFactory(repository)
-        registerViewModel = ViewModelProvider(this, factory).get(RegisterViewModel::class.java)
+        registerViewModel = ViewModelProvider(this, factory)[RegisterViewModel::class.java]
 
-        // Inisialisasi UI
-        registerButton = findViewById(R.id.btn_register)
-        nameEditText = findViewById(R.id.nameEditText)
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.customPassword)
-
-        // Tombol register diklik
-        registerButton.setOnClickListener {
-            val name = nameEditText.text.toString()
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-
-            // Panggil fungsi register dari ViewModel
-            registerViewModel.register(name, email, password)
+        // Observe loading state
+        registerViewModel.isLoading.observe(this) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        // Observasi perubahan pada registerResponse
-        registerViewModel.registerResponse.observe(this, Observer { response ->
-            if (response != null) {
-                if (!response.error!!) {
-                    // Register berhasil, lanjutkan ke LoginActivity
-                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-                    finish()  // Kembali ke LoginActivity setelah register berhasil
-                } else {
-                    // Tampilkan pesan error jika register gagal
-                    Toast.makeText(this, response.message ?: "Registration failed", Toast.LENGTH_SHORT).show()
-                }
+        // Observe messages (success or error)
+        registerViewModel.message.observe(this) { message ->
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+
+        // Handle register button click
+        registerButton.setOnClickListener {
+            val name = nameEditText.text.toString().trim()
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                registerViewModel.register(name, email, password)
             } else {
-                // Tampilkan pesan error jika tidak ada response
-                Toast.makeText(this, "Error: No response from server", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all available fields", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+
+        // TextView untuk pindah ke LoginActivity
+        txtGoToLogin.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
+

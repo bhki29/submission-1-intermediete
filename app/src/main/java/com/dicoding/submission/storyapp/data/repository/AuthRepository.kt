@@ -2,17 +2,26 @@ package com.dicoding.submission.storyapp.data.repository
 
 import com.dicoding.submission.storyapp.data.response.LoginResponse
 import com.dicoding.submission.storyapp.data.response.RegisterResponse
-import com.dicoding.submission.storyapp.data.retrofit.ApiConfig
+import com.dicoding.submission.storyapp.data.retrofit.ApiService
 
-class AuthRepository {
+class AuthRepository(private val apiService: ApiService) {
 
-    private val apiService = ApiConfig.getApiService()  // Menggunakan ApiConfig untuk mendapatkan ApiService
-
-    suspend fun register(name: String, email: String, password: String): RegisterResponse {
-        return apiService.register(name, email, password)
+    suspend fun login(email: String, password: String): Result<LoginResponse> {
+        return try {
+            val response = apiService.login(email, password)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun login(email: String, password: String): LoginResponse {
-        return apiService.login(email, password)
+    suspend fun register(name: String, email: String, password: String): Result<RegisterResponse> {
+        return try {
+            val response = apiService.register(name, email, password)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
+

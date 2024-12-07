@@ -8,19 +8,31 @@ import com.dicoding.submission.storyapp.data.repository.AuthRepository
 import com.dicoding.submission.storyapp.data.response.RegisterResponse
 import kotlinx.coroutines.launch
 
-class RegisterViewModel(private val repository: AuthRepository) : ViewModel() {
+class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
-    private val _registerResponse = MutableLiveData<RegisterResponse>()
-    val registerResponse: LiveData<RegisterResponse> get() = _registerResponse
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> = _message
+
+    private val _registerResponse = MutableLiveData<RegisterResponse?>()
+    val registerResponse: LiveData<RegisterResponse?> = _registerResponse
 
     fun register(name: String, email: String, password: String) {
+        _isLoading.value = true
         viewModelScope.launch {
-            try {
-                val response = repository.register(name, email, password)
-                _registerResponse.postValue(response)
-            } catch (e: Exception) {
-                _registerResponse.postValue(null) // Handle error
-            }
+            val result = authRepository.register(name, email, password)
+            _isLoading.value = false
+            result.fold(
+                onSuccess = {
+                    _registerResponse.value = it
+                    _message.value = it.message
+                },
+                onFailure = {
+                    _message.value = it.localizedMessage
+                }
+            )
         }
     }
 }
