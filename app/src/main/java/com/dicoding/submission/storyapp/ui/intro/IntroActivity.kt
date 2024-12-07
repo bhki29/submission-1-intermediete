@@ -3,8 +3,9 @@ package com.dicoding.submission.storyapp.ui.intro
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.dicoding.submission.storyapp.MainActivity
-import com.dicoding.submission.storyapp.data.pref.SharedPreferencesHelper
+import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.databinding.ActivityIntroBinding
 import com.dicoding.submission.storyapp.ui.login.LoginActivity
 import com.dicoding.submission.storyapp.ui.register.RegisterActivity
@@ -19,12 +20,16 @@ class IntroActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Cek apakah pengguna sudah login
-        if (SharedPreferencesHelper.isLoggedIn(this)) {
-            // Jika sudah login, langsung menuju ke MainActivity
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish() // Tutup IntroActivity
-            return
+        lifecycleScope.launchWhenCreated {
+            DataStoreHelper.isLoggedIn(applicationContext).collect { isLoggedIn ->
+                if (isLoggedIn) {
+                    // Jika sudah login, langsung menuju ke MainActivity tanpa melalui IntroActivity
+                    val intent = Intent(this@IntroActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish() // Tutup IntroActivity agar pengguna tidak bisa kembali
+                    return@collect
+                }
+            }
         }
 
         binding.btnLoginIntro.setOnClickListener {

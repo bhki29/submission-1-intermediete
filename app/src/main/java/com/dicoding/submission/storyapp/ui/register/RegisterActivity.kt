@@ -48,6 +48,15 @@ class RegisterActivity : AppCompatActivity() {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
 
+        // Observe navigasi ke LoginActivity
+        registerViewModel.navigateToLogin.observe(this) { shouldNavigate ->
+            if (shouldNavigate) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()  // Menutup RegisterActivity
+            }
+        }
+
         // Handle register button click
         registerButton.setOnClickListener {
             val name = nameEditText.text.toString().trim()
@@ -68,4 +77,5 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 }
+
 

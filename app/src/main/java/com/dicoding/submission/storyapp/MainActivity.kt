@@ -4,45 +4,50 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.dicoding.submission.storyapp.data.pref.SharedPreferencesHelper
+import androidx.lifecycle.lifecycleScope
+import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.ui.addstory.AddStoryActivity
-import com.dicoding.submission.storyapp.ui.login.LoginActivity
+import com.dicoding.submission.storyapp.ui.intro.IntroActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Cek apakah pengguna sudah login
-        if (SharedPreferencesHelper.isLoggedIn(this)) {
-            // Pengguna sudah login, tampilkan UI MainActivity
-            setContentView(R.layout.activity_main)
-
-            val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add)
-            fabAddStory.setOnClickListener {
-                val intent = Intent(this, AddStoryActivity::class.java)
-                startActivity(intent)
+        lifecycleScope.launchWhenCreated {
+            DataStoreHelper.isLoggedIn(applicationContext).collect { isLoggedIn ->
+                if (!isLoggedIn) {
+                    // Pengguna belum login, arahkan ke IntroActivity atau LoginActivity
+                    val intent = Intent(this@MainActivity, IntroActivity::class.java)
+                    startActivity(intent)
+                    finish() // Tutup MainActivity agar tidak bisa kembali ke halaman ini
+                }
             }
+        }
 
-            // Tombol logout
-            val logoutButton: ImageView = findViewById(R.id.btn_logout)
-            logoutButton.setOnClickListener {
-                // Hapus sesi login
-                SharedPreferencesHelper.clearLoginSession(this)
-                // Arahkan ke halaman login
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish() // Tutup MainActivity
-            }
-        } else {
-            // Pengguna belum login, arahkan ke halaman login
-            val intent = Intent(this, LoginActivity::class.java)
+        setContentView(R.layout.activity_main)
+
+        val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add)
+        fabAddStory.setOnClickListener {
+            val intent = Intent(this, AddStoryActivity::class.java)
             startActivity(intent)
-            finish() // Tutup MainActivity agar tidak bisa kembali ke halaman ini
+        }
+
+        val logoutButton: ImageView = findViewById(R.id.btn_logout)
+        logoutButton.setOnClickListener {
+            lifecycleScope.launch {
+                DataStoreHelper.clearLoginSession(applicationContext)
+            }
+            val intent = Intent(this, IntroActivity::class.java)
+            startActivity(intent)
+            finish() // Tutup MainActivity agar pengguna tidak bisa kembali
         }
     }
 }
+
+
 
 
 

@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dicoding.submission.storyapp.data.repository.AuthRepository
+import com.dicoding.submission.storyapp.data.response.ErrorResponse
 import com.dicoding.submission.storyapp.data.response.LoginResponse
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -22,18 +25,32 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun login(email: String, password: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = authRepository.login(email, password)
-            _isLoading.value = false
-            result.fold(
-                onSuccess = {
-                    _loginResponse.value = it
-                    _message.value = it.message
-                },
-                onFailure = {
-                    _message.value = it.localizedMessage
-                }
-            )
+            try {
+                val result = authRepository.login(email, password)
+
+                // Handle success
+                result.fold(
+                    onSuccess = {
+                        _loginResponse.value = it
+                        _message.value = it.message
+                    },
+                    onFailure = {
+                        _message.value = it.localizedMessage
+                    }
+                )
+            } catch (e: HttpException) {
+                // Handle HTTP error
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                _message.value = errorResponse.message ?: "An error occurred"
+            } catch (e: Exception) {
+                // Handle general error
+                _message.value = "Unexpected error: ${e.localizedMessage}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }
+
 
