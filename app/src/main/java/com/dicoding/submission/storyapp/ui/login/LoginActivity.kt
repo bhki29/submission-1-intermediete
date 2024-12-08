@@ -31,7 +31,6 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             DataStoreHelper.isLoggedIn(applicationContext).collect { isLoggedIn ->
                 if (isLoggedIn) {
-                    // Jika sudah login, arahkan ke MainActivity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -48,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         val txtGoToRegister = findViewById<TextView>(R.id.txtGoToRegister)
 
+        // Buat ApiService tanpa token
         val apiService = ApiConfig.getApiService()
         val repository = AuthRepository(apiService)
         val factory = LoginViewModelFactory(repository)
@@ -92,5 +92,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
+
 
 

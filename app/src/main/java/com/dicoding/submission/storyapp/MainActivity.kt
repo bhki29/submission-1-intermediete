@@ -6,7 +6,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
-import com.dicoding.submission.storyapp.ui.addstory.AddStoryActivity
+import com.dicoding.submission.storyapp.ui.story.StoryActivity
 import com.dicoding.submission.storyapp.ui.intro.IntroActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add)
         fabAddStory.setOnClickListener {
-            val intent = Intent(this, AddStoryActivity::class.java)
+            val intent = Intent(this, StoryActivity::class.java)
             startActivity(intent)
         }
 
