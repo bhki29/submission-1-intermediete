@@ -16,6 +16,7 @@ import com.dicoding.submission.storyapp.data.adapter.StoryAdapter
 import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.di.Injection
 import com.dicoding.submission.storyapp.ui.addstory.AddStoryActivity
+import com.dicoding.submission.storyapp.ui.detail.DetailActivity
 import com.dicoding.submission.storyapp.ui.intro.IntroActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -23,7 +24,6 @@ import kotlinx.coroutines.launch
 class StoryActivity : AppCompatActivity() {
 
     private lateinit var storyViewModel: StoryViewModel
-    private lateinit var storyAdapter: StoryAdapter
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,13 +32,14 @@ class StoryActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        storyAdapter = StoryAdapter(emptyList())
-        recyclerView.adapter = storyAdapter
+
+        // Mengambil token dari DataStoreHelper
+        val token = DataStoreHelper.getToken(this)
 
         // Inisialisasi ViewModel
         val repository = Injection.provideRepository(applicationContext)
         val factory = StoryViewModelFactory(repository)
-        storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         // Observasi LiveData
         storyViewModel.isLoading.observe(this) { isLoading ->
@@ -46,7 +47,12 @@ class StoryActivity : AppCompatActivity() {
         }
 
         storyViewModel.stories.observe(this) { stories ->
-            storyAdapter = StoryAdapter(stories)
+            val storyAdapter = StoryAdapter(stories) { storyId ->
+                // Kirim ID cerita ke DetailActivity
+                val intent = Intent(this, DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_STORY_ID, storyId)
+                startActivity(intent)
+            }
             recyclerView.adapter = storyAdapter
         }
 
@@ -55,8 +61,7 @@ class StoryActivity : AppCompatActivity() {
         }
 
         // Memulai permintaan untuk mendapatkan cerita
-        storyViewModel.getStories()
-
+        storyViewModel.getStories(token)
 
         val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add)
         fabAddStory.setOnClickListener {
@@ -71,7 +76,12 @@ class StoryActivity : AppCompatActivity() {
             }
             val intent = Intent(this, IntroActivity::class.java)
             startActivity(intent)
-            finish() // Tutup MainActivity agar pengguna tidak bisa kembali
+            finish()
         }
     }
 }
+
+
+
+
+
