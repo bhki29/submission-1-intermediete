@@ -40,7 +40,7 @@ class StoryActivity : AppCompatActivity() {
         val factory = StoryViewModelFactory(repository)
         storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
 
-
+        // Observasi LiveData
         storyViewModel.isLoading.observe(this) { isLoading ->
             findViewById<ProgressBar>(R.id.progressBar).visibility = if (isLoading) View.VISIBLE else View.GONE
         }
