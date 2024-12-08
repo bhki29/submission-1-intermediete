@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.dicoding.submission.storyapp.MainActivity
 import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.databinding.ActivityIntroBinding
 import com.dicoding.submission.storyapp.ui.login.LoginActivity
 import com.dicoding.submission.storyapp.ui.register.RegisterActivity
+import com.dicoding.submission.storyapp.ui.story.StoryActivity
 
 class IntroActivity : AppCompatActivity() {
 
@@ -24,7 +24,7 @@ class IntroActivity : AppCompatActivity() {
             DataStoreHelper.isLoggedIn(applicationContext).collect { isLoggedIn ->
                 if (isLoggedIn) {
                     // Jika sudah login, langsung menuju ke MainActivity tanpa melalui IntroActivity
-                    val intent = Intent(this@IntroActivity, MainActivity::class.java)
+                    val intent = Intent(this@IntroActivity, StoryActivity::class.java)
                     startActivity(intent)
                     finish() // Tutup IntroActivity agar pengguna tidak bisa kembali
                     return@collect

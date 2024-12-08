@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.dicoding.submission.storyapp.MainActivity
 import com.dicoding.submission.storyapp.R
 import com.dicoding.submission.storyapp.costumview.CustomEmail
 import com.dicoding.submission.storyapp.costumview.CustomPassword
@@ -17,6 +16,7 @@ import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.data.repository.AuthRepository
 import com.dicoding.submission.storyapp.data.retrofit.ApiConfig
 import com.dicoding.submission.storyapp.ui.register.RegisterActivity
+import com.dicoding.submission.storyapp.ui.story.StoryActivity
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             DataStoreHelper.isLoggedIn(applicationContext).collect { isLoggedIn ->
                 if (isLoggedIn) {
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    val intent = Intent(this@LoginActivity, StoryActivity::class.java)
                     startActivity(intent)
                     finish()
                     return@collect
@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
                     response.loginResult?.token?.let { token ->
                         DataStoreHelper.saveLoginSession(applicationContext, token)
                     }
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    val intent = Intent(this@LoginActivity, StoryActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     finish()

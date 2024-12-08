@@ -1,16 +1,24 @@
 package com.dicoding.submission.storyapp.ui.story
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.submission.storyapp.R
 import com.dicoding.submission.storyapp.data.adapter.StoryAdapter
+import com.dicoding.submission.storyapp.data.pref.DataStoreHelper
 import com.dicoding.submission.storyapp.di.Injection
+import com.dicoding.submission.storyapp.ui.addstory.AddStoryActivity
+import com.dicoding.submission.storyapp.ui.intro.IntroActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 
 class StoryActivity : AppCompatActivity() {
 
@@ -48,5 +56,22 @@ class StoryActivity : AppCompatActivity() {
 
         // Memulai permintaan untuk mendapatkan cerita
         storyViewModel.getStories()
+
+
+        val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add)
+        fabAddStory.setOnClickListener {
+            val intent = Intent(this, AddStoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        val logoutButton: ImageView = findViewById(R.id.btn_logout)
+        logoutButton.setOnClickListener {
+            lifecycleScope.launch {
+                DataStoreHelper.clearLoginSession(applicationContext)
+            }
+            val intent = Intent(this, IntroActivity::class.java)
+            startActivity(intent)
+            finish() // Tutup MainActivity agar pengguna tidak bisa kembali
+        }
     }
 }
